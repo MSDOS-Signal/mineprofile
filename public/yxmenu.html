@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon"
+        href="https://ts1.cn.mm.bing.net/th?id=ODLS.32f41ca9-37f7-4114-9a3e-f7e17a8a998d&w=32&h=32&qlt=90&pcl=fffffa&o=6&pid=1.2">
+    <title>游戏界面</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to bottom right, #1e3c72, purple);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            text-align: center;
+            padding: 20px;
+            border-radius: 15px;
+            background: rgba(0, 0, 0, 0.7);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            /* 为按钮之间增加间距 */
+        }
+
+        .game-button {
+            padding: 15px 30px;
+            font-size: 1.2em;
+            color: #fff;
+            background: linear-gradient(45deg, #ff6b6b, #f7d94b);
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.3s;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .game-button:hover {
+            transform: translateY(-3px);
+            background: linear-gradient(45deg, #ff4c4c, #f6c34b);
+        }
+
+        .game-button:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h3>炘灏墨麒麟制作</h3>
+        <h1>欢迎来到游戏世界</h1>
+        <div class="button-container">
+            <button class="game-button" onclick="location.href='./tcs.html'">贪吃蛇</button>
+            <button class="game-button" onclick="location.href='./dzk.html'">打砖块</button>
+            <button class="game-button" onclick="alert('尚未完成，尽情期待')">拼图游戏</button>
+            <button class="game-button" onclick="location.href='./sj.html'">射击游戏</button>
+            <button class="game-button" onclick="location.href='./index2.html'">返回个人主页</button>
+        </div>
+    </div>
+    <script>
+        function startGame(gameName) {
+            alert(`${gameName} 游戏开始！`);
+        }
+    </script>
+</body>
+
+</html>

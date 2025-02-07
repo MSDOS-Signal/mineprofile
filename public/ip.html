@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IP 地理位置查询</title>
+    <style>
+        /* 重置默认样式 */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            height: 100%;
+            font-family: 'Roboto', sans-serif;
+            background: #121212; /* 深色背景，增强科技感 */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #e0e0e0; /* 浅灰色文字 */
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: #00bcd4; /* 亮蓝色字体，提升科技感 */
+            text-shadow: 0 2px 5px rgba(0, 188, 212, 0.3);
+        }
+
+        #location {
+            background: linear-gradient(145deg, #1e1e1e, #3a3a3a); /* 漂亮的渐变背景 */
+            width: 100%;
+            max-width: 600px;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6); /* 提升科技感的阴影 */
+            color: #ffffff;
+            font-size: 1.2rem;
+            line-height: 1.8;
+            text-align: left;
+            margin-bottom: 20px;
+            transition: all 0.3s ease; /* 增加动画效果 */
+        }
+
+        #location:hover {
+            box-shadow: 0 8px 16px rgba(0, 188, 212, 0.7);
+            transform: scale(1.02);
+        }
+
+        footer {
+            background-color: #00bcd4;
+            color: #121212;
+            padding: 15px 0;
+            width: 100%;
+            text-align: center;
+            font-size: 1rem;
+            border-radius: 8px;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            margin-top: auto;
+            box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.5);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            #location {
+                padding: 30px;
+                font-size: 1rem;
+            }
+        }
+
+        /* 更小屏幕设备的调整 */
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            #location {
+                padding: 20px;
+                font-size: 0.9rem;
+            }
+        }
+
+        button {
+            width: 100%;
+            height: 50px;
+            background-color: #00bcd4;
+            color: #fff;
+            font-weight: bold;
+            font-size: 20px;
+            border-radius: 10px;
+            border: none; /* 去掉默认边框 */
+            cursor: pointer; /* 更改光标样式 */
+            transition: all 0.3s ease; /* 平滑过渡效果 */
+            box-shadow: 0 0 5px rgba(0, 188, 212, 0.5); /* 初始阴影效果 */
+        }
+
+        button:hover {
+            transform: scale(1.05); /* 放大效果 */
+            box-shadow: 0 0 15px rgba(0, 188, 212, 1); /* 发光效果 */
+        }
+
+        p {
+            color: #fff;
+            font-weight: bold;
+            font-size: 30px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>IP 地理位置查询</h1>
+    <div id="location">加载中...</div>
+
+    <script>
+        function getLocation() {
+            fetch('http://ip-api.com/json/')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        document.getElementById('location').innerHTML = `
+                            <strong>IP 地址:</strong> ${data.query}<br>
+                            <strong>国家:</strong> ${data.country}<br>
+                            <strong>地区:</strong> ${data.regionName}<br>
+                            <strong>城市:</strong> ${data.city}<br>
+                            <strong>ISP:</strong> ${data.isp}<br>
+                            <button onclick="location.href='index2.html'">返回</button>
+                        `;
+                    } else {
+                        document.getElementById('location').innerText = '无法获取位置信息。';
+                    }
+                })
+                .catch(error => {
+                    console.error('错误:', error);
+                    document.getElementById('location').innerText = '发生错误，请稍后再试。';
+                });
+        }
+
+        window.onload = getLocation;
+    </script>
+
+    <footer>
+        <p>炘灏墨麒麟开发&copy; 2025所有</p>
+    </footer>
+
+</body>
+</html>

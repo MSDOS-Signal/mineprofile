@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="./dyq.jpg">
+    <title>万能青年旅店音乐界面</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: rgba(175, 143, 82);
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 100vh;
+        }
+
+        .container {
+            flex: 1;
+            width: 60%;
+            margin: 100px auto;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 10px;
+            background-color: rgba(255,255,255,0.2);
+            border-radius: 10px;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin: 0;
+        }
+
+        header h2 {
+            font-size: 1.5em;
+            color: #555;
+        }
+
+        .music-player {
+            margin: 20px 0;
+        }
+
+        #song-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        footer {
+            background-color: #969a15;
+            color: #121212;
+            padding: 15px 0;
+            width: 100%;
+            text-align: center;
+            font-size: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.5);
+        }
+
+        #song-list li {
+            color: #fff;
+            font-weight: bold;
+            border: solid 1px;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: background-color 0.3s;
+        }
+
+        #song-list li:hover {
+            color: rgb(146, 146, 66);
+            background-color: #333;
+        }
+
+        button {
+            width: 100%;
+            height: 50px;
+            background-color: #333;
+            color: #fff;
+            font-weight: bold;
+            font-size: 20px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 5px rgba(145, 178, 89, 0.5);
+        }
+
+        button:hover {
+            color: rgb(172, 172, 83);
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgb(152, 171, 58);
+        }
+        p {
+            
+            font-weight: bold;
+            font-size: 30px;
+        }
+        @media (max-width: 800px) {
+            .container {
+                width: 90%;
+                margin: 20px auto;
+            }
+            img {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img style="border-radius: 10px;" src="./wq.jpg">
+        <header>
+            <h1>万能青年旅店</h1>
+            <h2>歌曲列表</h2>
+            <button id="toggle-info">了解更多</button>
+            <div id="band-info" style="display: none;">
+                <p>万能青年旅店，于1996年在河北省石家庄组建的摇滚乐队</p>
+                <p>由主唱兼吉他手董亚千、贝斯手姬赓、小号手史立以及鼓手冯江组成</p>
+            </div>
+            <h4>集齐所有万青歌曲，包括《万能青年旅店》《冀西南林路行》</h4>
+        </header>
+        
+        <div class="music-player">
+            <audio id="audio" controls>
+                <source id="audio-source" src="" type="audio/mpeg">
+                您的浏览器不支持音频元素。
+            </audio>
+        </div>
+        <ul id="song-list"></ul>
+        <button onclick="location.href='./index2.html'">返回</button>
+    </div>
+    <footer>
+        <p>炘灏墨麒麟开发&copy; 2025所有</p>
+    </footer>
+    <script>
+        const songs = [
+            { title: "大石碎胸口", src: "./19841211.mp3" },
+            { title: "杀死那个石家庄人", src: "./ssngsjzr.mp3" },
+            { title: "秦皇岛", src: "./qhd.mp3" },
+            { title: "十万嬉皮", src: "./swxp.mp3" },
+            { title: "揪心的玩笑与漫长的白日梦", src: "./wx.mp3" },
+            { title: "山雀", src: "./sq.mp3" },
+            { title: "河北墨麒麟", src: "./hbmql.mp3" },
+            { title: "不万能的喜剧", src: "./bwn.mp3" },
+            { title: "采石", src: "./cs.mp3" },
+            { title: "狗尿馆", src: "./gng.mp3" },
+            { title: "泥河", src: "./nh.mp3" },
+            { title: "郊眠寺", src: "./jms.mp3" },
+            { title: "洋鸟消夏录", src: "./yn.mp3" },
+            { title: "绕越", src: "./ry.mp3" },
+            { title: "早", src: "./z.mp3" },
+            { title: "平等云雾", src: "./pdyw.mp3" },
+            { title: "张洲", src: "./zz.mp3" },
+        ];
+
+        const songList = document.getElementById('song-list');
+        const audio = document.getElementById('audio');
+        const audioSource = document.getElementById('audio-source');
+
+        // 生成歌曲列表
+        songs.forEach((song, index) => {
+            const li = document.createElement('li');
+            li.textContent = song.title;
+            li.onclick = () => playSong(index);
+            songList.appendChild(li);
+        });
+        const toggleButton = document.getElementById('toggle-info');
+        const bandInfo = document.getElementById('band-info');
+
+        toggleButton.onclick = () => {
+        if (bandInfo.style.display === 'none') {
+        bandInfo.style.display = 'block';
+         } else {
+        bandInfo.style.display = 'none';
+     }
+};
+
+        // 播放歌曲
+        function playSong(index) {
+            audioSource.src = songs[index].src;
+            audio.load();
+            audio.play();
+        }
+    </script>
+</body>
+</html>

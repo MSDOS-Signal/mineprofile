@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2D Shooter Game</title>
+  <style>
+    body { margin: 0; overflow: hidden; }
+    canvas { display: block; background-color: #202020; }
+
+    /* 为手机用户添加控制按钮 */
+    .button-container {
+      position: absolute;
+      bottom: 30px;
+      left: 20px;
+      z-index: 10;
+    }
+    .button-container button {
+      background-color: rgba(0, 0, 0, 0.7);
+      border: 2px solid white;
+      color: white;
+      font-size: 20px;
+      width: 60px;
+      height: 60px;
+      margin: 10px;
+      border-radius: 30px;
+    }
+    .button-container .move-button {
+      background-color: rgba(0, 0, 255, 0.7);
+    }
+    .button-container .shoot-button {
+      background-color: rgba(255, 0, 0, 0.7);
+    }
+    #gameOverText {
+      color: white;
+      font-size: 36px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: none;
+    }
+    #restartButton {
+      color: white;
+      font-size: 24px;
+      background-color: rgba(0, 0, 0, 0.7);
+      padding: 10px;
+      border-radius: 5px;
+      display: none;
+      position: absolute;
+      bottom: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="gameCanvas"></canvas>
+
+<div class="button-container">
+  <button class="move-button" id="moveUpBtn">↑</button>
+  <button class="move-button" id="moveDownBtn">↓</button>
+  <button class="move-button" id="moveLeftBtn">←</button>
+  <button class="move-button" id="moveRightBtn">→</button>
+  <button class="shoot-button" id="shootBtn">Shoot</button>
+</div>
+
+<div id="gameOverText">你被打死了！</div>
+<button id="restartButton" onclick="window.location.href='yxmenu.html'">返回主菜单</button>
+
+<script>
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+
+// 设置画布大小
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const player = {
+  x: canvas.width / 2,
+  y: canvas.height / 2,
+  width: 40,
+  height: 40,
+  speed: 5,
+  color: "blue",
+  dx: 0,
+  dy: 0,
+  health: 100
+};
+
+const bullets = [];
+const enemies = [];
+let score = 0;
+let mouseX = 0;
+let mouseY = 0;
+let isGameOver = false;
+
+// 监听鼠标位置
+canvas.addEventListener("mousemove", (e) => {
+  mouseX = e.clientX;
+  mouseY = e.clientY;
+});
+
+// 监听射击事件
+canvas.addEventListener("click", () => {
+  if (!isGameOver) shootBullet();
+});
+
+// 监听移动按钮事件
+document.getElementById("moveLeftBtn").addEventListener("touchstart", () => player.dx = -player.speed);
+document.getElementById("moveUpBtn").addEventListener("touchstart", () => player.dy = -player.speed);
+document.getElementById("moveRightBtn").addEventListener("touchstart", () => player.dx = player.speed);
+document.getElementById("moveDownBtn").addEventListener("touchstart", () => player.dy = player.speed);
+document.getElementById("shootBtn").addEventListener("touchstart", () => shootBullet());
+
+// 监听按钮松开事件，停止移动
+document.getElementById("moveLeftBtn").addEventListener("touchend", () => player.dx = 0);
+document.getElementById("moveUpBtn").addEventListener("touchend", () => player.dy = 0);
+document.getElementById("moveRightBtn").addEventListener("touchend", () => player.dx = 0);
+document.getElementById("moveDownBtn").addEventListener("touchend", () => player.dy = 0);
+
+// 监听键盘事件（WASD）
+document.addEventListener("keydown", (e) => {
+  if (isGameOver) return;
+
+  switch (e.key) {
+    case "a":
+    case "ArrowLeft":
+      player.dx = -player.speed;
+      break;
+    case "w":
+    case "ArrowUp":
+      player.dy = -player.speed;
+      break;
+    case "d":
+    case "ArrowRight":
+      player.dx = player.speed;
+      break;
+    case "s":
+    case "ArrowDown":
+      player.dy = player.speed;
+      break;
+    case " ":
+      shootBullet(); // 空格射击
+      break;
+  }
+});
+
+document.addEventListener("keyup", (e) => {
+  if (isGameOver) return;
+
+  switch (e.key) {
+    case "a":
+    case "ArrowLeft":
+      if (player.dx < 0) player.dx = 0;
+      break;
+    case "w":
+    case "ArrowUp":
+      if (player.dy < 0) player.dy = 0;
+      break;
+    case "d":
+    case "ArrowRight":
+      if (player.dx > 0) player.dx = 0;
+      break;
+    case "s":
+    case "ArrowDown":
+      if (player.dy > 0) player.dy = 0;
+      break;
+  }
+});
+
+// 创建敌人
+function createEnemy() {
+  if (isGameOver) return; // 游戏结束时不再创建敌人
+
+  const enemy = {
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    width: 40,
+    height: 40,
+    speed: 2,
+    color: "pink"
+  };
+  enemies.push(enemy);
+}
+
+// 处理玩家的移动
+function movePlayer() {
+  player.x += player.dx;
+  player.y += player.dy;
+
+  // 防止玩家离开屏幕
+  player.x = Math.max(0, Math.min(canvas.width - player.width, player.x));
+  player.y = Math.max(0, Math.min(canvas.height - player.height, player.y));
+}
+
+// 创建子弹
+function shootBullet() {
+  if (isGameOver) return;
+
+  const angle = Math.atan2(mouseY - player.y, mouseX - player.x);
+  const bullet = {
+    x: player.x + player.width / 2,
+    y: player.y + player.height / 2,
+    width: 10,
+    height: 5,
+    speed: 7,
+    angle: angle,
+    color: "cyan"
+  };
+  bullets.push(bullet);
+}
+
+// 更新子弹位置
+function updateBullets() {
+  for (let i = bullets.length - 1; i >= 0; i--) {
+    const bullet = bullets[i];
+    bullet.x += bullet.speed * Math.cos(bullet.angle);
+    bullet.y += bullet.speed * Math.sin(bullet.angle);
+
+    // 如果子弹超出画布，移除
+    if (bullet.x < 0 || bullet.x > canvas.width || bullet.y < 0 || bullet.y > canvas.height) {
+      bullets.splice(i, 1);
+    } else {
+      // 检查子弹是否击中敌人
+      for (let j = enemies.length - 1; j >= 0; j--) {
+        const enemy = enemies[j];
+        if (checkCollision(bullet, enemy)) {
+          score += 10;
+          enemies.splice(j, 1); // 删除敌人
+          bullets.splice(i, 1); // 删除子弹
+          break;
+        }
+      }
+    }
+  }
+}
+
+// 检查子弹与敌人碰撞
+function checkCollision(bullet, enemy) {
+  return bullet.x < enemy.x + enemy.width &&
+         bullet.x + bullet.width > enemy.x &&
+         bullet.y < enemy.y + enemy.height &&
+         bullet.y + bullet.height > enemy.y;
+}
+
+// 更新敌人位置
+function updateEnemies() {
+  enemies.forEach(enemy => {
+    // 简单AI：敌人向玩家移动
+    const angle = Math.atan2(player.y - enemy.y, player.x - enemy.x);
+    enemy.x += enemy.speed * Math.cos(angle);
+    enemy.y += enemy.speed * Math.sin(angle);
+
+    // 如果敌人与玩家碰撞
+    if (checkCollision(player, enemy)) {
+      player.health -= 0.1;
+      if (player.health <= 0) {
+        gameOver();
+      }
+    }
+  });
+}
+
+// 绘制游戏状态
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // 绘制玩家
+  ctx.fillStyle = player.color;
+  ctx.fillRect(player.x, player.y, player.width, player.height);
+
+  // 绘制子弹
+  bullets.forEach(bullet => {
+    ctx.fillStyle = bullet.color;
+    ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
+  });
+
+  // 绘制敌人
+  enemies.forEach(enemy => {
+    ctx.fillStyle = enemy.color;
+    ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
+  });
+
+  // 绘制血量
+  ctx.fillStyle = "red";
+  ctx.fillRect(10, 10, 200, 20);
+  ctx.fillStyle = "green";
+  ctx.fillRect(10, 10, player.health * 2, 20);
+
+  // 绘制游戏结束
+  if (isGameOver) {
+    document.getElementById("gameOverText").style.display = "block";
+    document.getElementById("restartButton").style.display = "block";
+    document.getElementById("restart").style.display = "block";
+  }
+}
+
+// 游戏结束
+function gameOver() {
+  isGameOver = true;
+}
+
+// 游戏循环
+function gameLoop() {
+  if (!isGameOver) {
+    movePlayer();
+    updateEnemies();
+    updateBullets();
+    draw();
+    requestAnimationFrame(gameLoop);
+  }
+}
+
+// 初始化敌人和游戏循环
+setInterval(createEnemy, 1000);  // 每秒创建一个敌人
+gameLoop();
+</script>
+
+</body>
+</html>
