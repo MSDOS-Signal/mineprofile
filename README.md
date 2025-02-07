@@ -6,14 +6,21 @@
 npm run serve
 ```
 
-## Project setup
+## 进入之后
+
+### 默认用户名
 ```
-yarn install
+root
 ```
 
-### Compiles and hot-reloads for development
+### 默认密码
 ```
-yarn serve
+Key-122
+```
+
+## 如果不行，下面是官方的命令，依次执行就行（在根目录下）
+```
+yarn install
 ```
 
 ### Compiles and minifies for production
@@ -21,10 +28,14 @@ yarn serve
 yarn build
 ```
 
-### Lints and fixes files
+### Compiles and hot-reloads for development
 ```
-yarn lint
+yarn serve
 ```
+
+
+
+
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
